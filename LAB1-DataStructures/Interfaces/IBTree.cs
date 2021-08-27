@@ -9,6 +9,5 @@ namespace LAB1_DataStructures.Interfaces
     {
         void Insert(T value);
         void Delete(T value);
-
     }
 }
