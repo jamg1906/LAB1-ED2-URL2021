@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using LAB1_DataStructures.Tree;
 
 namespace LAB1_ConsoleApp
@@ -74,6 +75,7 @@ namespace LAB1_ConsoleApp
         static void Main(string[] args)
         {
             bool exit = false;
+            Lab01.Models.CompararCon<int> CC = new Lab01.Models.CompararCon<int>(IntComparison);
             while (!exit)
             {
                 try
@@ -85,9 +87,6 @@ namespace LAB1_ConsoleApp
                     {
                         case 1:
                             {
-                                //DECLARAR ARBOL B
-                                LAB1_DataStructures.Tree.BTree<int> Tree = new LAB1_DataStructures.Tree.BTree<int>();
-                                Tree.Comparer = IntComparison;
                                 bool a = true;
                                 while (a)
                                 {
@@ -102,7 +101,7 @@ namespace LAB1_ConsoleApp
                                             throw new FormatException();
                                         }
                                         //SET GRADO DEL ARBOL
-                                        Tree.degree = m;
+                                        Lab01.Models.arbolB<int> Tree = new Lab01.Models.arbolB<int>(m, CC);
                                         Header();
                                         TitleOption1();
                                         Console.WriteLine("Ingrese la cantidad de números al azar a ingresar (debe ser mayor a 0):");
@@ -129,7 +128,7 @@ namespace LAB1_ConsoleApp
                                         for (int j = 0; j < i; j++)
                                         {
                                             //INSERTAR ACA AL ARBOL B EL NÚMERO GENERADO AL AZAR.
-                                            Tree.Insert(ElRandom1.Next(min, max));
+                                            Tree.Insertar(ElRandom1.Next(min, max));
                                         }
                                         Console.WriteLine("Se ha llenado satisfactoriamente el árbol. Presione cualquier tecla para ver los recorridos.");
                                         Console.ReadKey();
@@ -138,9 +137,10 @@ namespace LAB1_ConsoleApp
                                         a = false;
                                         TitleTraversal(1);
                                         //METER EN LISTA RECORRIDO EL PREORDER DEL ARBOL
+                                        var Recorrido = Tree.ConvertirALista();
                                         string result = "";
                                         int iterardor = 1;
-                                        /*foreach (int number in Recorrido)
+                                        foreach (int number in Recorrido)
                                         {
                                             result += number.ToString() + ",";
                                             if ((iterardor % m) == 0)
@@ -148,7 +148,7 @@ namespace LAB1_ConsoleApp
                                                 result += Environment.NewLine;
                                             }
                                             iterardor++;
-                                        }*/
+                                        }
                                         Console.WriteLine(result);
                                         TitleTraversal(2);
                                         //METER EN LISTA RECORRIDO EL INORDER DEL ARBOL
@@ -210,10 +210,12 @@ namespace LAB1_ConsoleApp
                                             throw new FormatException();
                                         }
                                         //SET GRADO DE ARBOL CON EL VALOR INGRESAOD
+                                        Lab01.Models.arbolB<int> Tree = new Lab01.Models.arbolB<int>(m, CC);
                                         Header();
                                         TitleOption2();
                                         Console.WriteLine("Ingrese un número para insertarlo en el árbol: (Si desea parar ingrese otro caracter o presione enter)");
                                         //CREAR LISTA DE INTS ADDME
+                                        List<int> AddMe = new List<int>();
                                         bool stop = false;
                                         while (!stop)
                                         {
@@ -221,11 +223,12 @@ namespace LAB1_ConsoleApp
                                             {
                                                 int me = Convert.ToInt32(Console.ReadLine());
                                                 //AÑADIR A ADDME EL INT
+                                                AddMe.Add(me);
                                             }
                                             catch
                                             {
                                                 stop = true;
-                                                //if (AddMe.Count == 0)
+                                                if (AddMe.Count == 0)
                                                 {
                                                     throw new FormatException();
                                                 }
@@ -233,10 +236,11 @@ namespace LAB1_ConsoleApp
                                         }
                                         Header();
                                         TitleOption2();
-                                        /*foreach (int n in AddMe)
+                                        foreach (int n in AddMe)
                                         {
                                             //INSERTAR N EN ARBOL B
-                                        }*/
+                                            Tree.Insertar(n);
+                                        }
                                         Console.WriteLine("Se ha llenado satisfactoriamente el árbol. Presione cualquier tecla para ver los recorridos.");
                                         Console.ReadKey();
                                         Header();
@@ -244,9 +248,10 @@ namespace LAB1_ConsoleApp
                                         b = false;
                                         TitleTraversal(1);
                                         //METER EN LISTA RECORRIDO EL PREORDER DEL ARBOL
+                                        var Recorrido = Tree.ConvertirALista();
                                         string result = "";
                                         int iterardor = 1;
-                                        /*foreach (int number in Recorrido)
+                                        foreach (int number in Recorrido)
                                         {
                                             result += number.ToString() + ",";
                                             if ((iterardor % m) == 0)
@@ -254,7 +259,7 @@ namespace LAB1_ConsoleApp
                                                 result += Environment.NewLine;
                                             }
                                             iterardor++;
-                                        }*/
+                                        }
                                         Console.WriteLine(result);
                                         TitleTraversal(2);
                                         //METER EN LISTA RECORRIDO EL INORDER DEL ARBOL
