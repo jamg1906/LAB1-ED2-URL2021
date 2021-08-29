@@ -1,173 +1,213 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
-namespace LAB1_DataStructures.Tree
+namespace Lab01.Models
 {
-    public class BTree<T> : Interfaces.IBTree<T>
+    public delegate int CompararCon<T>(T Primer_valor, T Segundo_valor);
+    public class nodoB<T>
     {
-        public int degree { get; set; }
-        //public int root = -1;
-        public int count;
-        public Delegate Comparer;
-        //int current_id = 1;
-        private BTreeNode<T> Root { get; set; }
-
-        //int SetID()
-        //{
-        //    current_id++;
-        //    return current_id - 1;
-        //}
-        public void Delete(T value)
+        public T[] Valores { get; set; }
+        public nodoB<T>[] Hijos { get; set; }
+        public int Contador { get; set; }
+        public nodoB()
         {
-            throw new NotImplementedException();
+            Valores = new T[5];
+            Hijos = new nodoB<T>[5];
+            Contador = 0;
         }
-
-        public void Insert(T value)
+    }
+    public class arbolB<T>
+    {
+        public nodoB<T> raiz { get; set; }
+        public int Orden { get; set; }
+        public int Minimo { get; set; }
+        public int Maximo { get; set; }
+        public Lazy<List<T>> Listado { get; set; }
+        public CompararCon<T> Comparador { get; set; }
+        public arbolB()
         {
-            if (Root == null)
+            raiz = null;
+        }
+        public arbolB(int Orden_1, CompararCon<T> comparar)
+        {
+            this.Orden = Orden_1;
+            Minimo = (Orden_1 - 1) / 2;
+            Maximo = Orden_1 - 1;
+            this.raiz = null;
+            this.Comparador = comparar;
+            this.Listado = new Lazy<List<T>>();
+        }
+        public static bool EstaVacio(nodoB<T> nuevoNodo)
+        {
+            return nuevoNodo == null;
+        }
+        private void BusquedaNodo(T llave_valor, nodoB<T> nodoP, ref bool localizado, ref int ContAux)
+        {
+            if (Comparador(llave_valor, nodoP.Valores[1]) == -1)
             {
-                //No hay raíz, se crea.
-                BTreeNode<T> node = new BTreeNode<T>(degree)
-                {
-                    parent = null,
-                    isLeaf = true,
-                };
-                node.values[0] = value;
-                Root = node;
-                Root.NumberOfValues++;
-                count++;
-                //root = current_id - 1;
+                localizado = false;
+                ContAux = 0;
             }
             else
             {
-                //ya hay raíz, se busca sí ya existe el valor.
-                if (!Exists(value))
+                ContAux = nodoP.Contador;
+                while (Comparador(llave_valor, nodoP.Valores[ContAux]) == -1 && ContAux > 1)
                 {
-                    if (Root.NumberOfValues == degree-1)
-                    {
-                        BTreeNode<T> Temporal = new BTreeNode<T>(degree);
-                        Temporal.isLeaf = false;
-                        Temporal.parent = null;
-                        Temporal.children[0] = Root;
-                        Split(0, Root);
-                        int i = 0;
-                        if ((int)Comparer.DynamicInvoke(Temporal.values[0], value) == -1)
-                        {
-                            i++;
-                        }
-                        InsertInNode(value, Temporal.children[i]);
-                        Root = Temporal;
-                    }
-                    else
-                    {
-                        InsertInNode(value, Root);
-                    }
-                    //No existe, se inserta
-                    //int d = Root.values.Capacity;
-                    //ir a hoja navegando de acuerdo a los valores.
-
+                    ContAux -= 1;
+                    localizado = (Comparador(llave_valor, nodoP.Valores[ContAux]) == 0);
+                }
+            }
+        }
+        public void Busqueda(T Llave_valor, nodoB<T> Nodo_principal, ref bool Localizado, ref nodoB<T> Nodo_aux, ref int P)
+        {
+            if (EstaVacio(Nodo_principal))
+            {
+                Localizado = false;
+            }
+            else
+            {
+                BusquedaNodo(Llave_valor, Nodo_principal, ref Localizado, ref P);
+                if (Localizado)
+                {
+                    Nodo_aux = Nodo_principal;
                 }
                 else
                 {
-                    //si existe se ignora
+                    Busqueda(Llave_valor, Nodo_principal.Hijos[P], ref Localizado, ref Nodo_aux, ref P);
                 }
-
-                //ir a hoja navegando de acuerdo a los valores.
-
             }
         }
-
-        void InsertInNode(T value)
+        private void RecorridoInorder(nodoB<T> NodoArbol)
         {
-            InsertInNode(value, Root);
-        }
-
-        void InsertInNode(T value, BTreeNode<T> Node)
-        {
-            //Aquí habría que ir a buscar un nodo que tenga espacio y que sea hoja para insertar el valor.
-            int i = Node.NumberOfValues - 1;
-            if (Node.isLeaf)
+            if (!EstaVacio(NodoArbol))
             {
-                while (i >= 0 && ((int)Comparer.DynamicInvoke(Node.values[i], value) == 1))
+                RecorridoInorder(NodoArbol.Hijos[0]);
+                for (int i = 1; i < NodoArbol.Contador; i++)
                 {
-                    Node.values[i + 1] = Node.values[i];
-                    i--;
+                    Listado.Value.Add(NodoArbol.Valores[i]);
+                    RecorridoInorder(NodoArbol.Hijos[i]);
                 }
-                Node.values[i + 1] = value;
-                Node.NumberOfValues++;
+            }
+        }
+        public List<T> ConvertirALista()
+        {
+            Listado = new Lazy<List<T>>();
+            RecorridoInorder(raiz);
+            return Listado.Value;
+        }
+        private void InsertarEnHoja(T H, nodoB<T> HDerecho, nodoB<T> Nodo, int A)
+        {
+            for (int i = Nodo.Contador; i >= A + 1; i--)
+            {
+                Nodo.Valores[i + 1] = Nodo.Valores[i];
+                Nodo.Hijos[i + 1] = Nodo.Hijos[i];
+            }
+            Nodo.Valores[A + 1] = H;
+            Nodo.Hijos[A + 1] = HDerecho;
+            Nodo.Contador = Nodo.Contador + 1;
+        }
+        private void PartirNodo(T H, nodoB<T> HDerecho, nodoB<T> Nodo, int A, ref T Mitad, ref nodoB<T> MitadDerecha)
+        {
+            int PosicionDeLaMitad;
+            PosicionDeLaMitad = A;
+            if (A <= Minimo)
+            {
+                A = Minimo;
             }
             else
             {
-                while (i >= 0 && ((int)Comparer.DynamicInvoke(Node.values[i], value) == 1))
+                A = Minimo + 1;
+            }
+            MitadDerecha = new nodoB<T>();
+            for (int i = PosicionDeLaMitad + 1; i < Orden; i++)
+            {
+                MitadDerecha.Valores[i - PosicionDeLaMitad] = Nodo.Valores[i];
+                MitadDerecha.Hijos[i - PosicionDeLaMitad] = Nodo.Hijos[i];
+            }
+            MitadDerecha.Contador = Maximo - PosicionDeLaMitad;
+            Nodo.Contador = PosicionDeLaMitad;
+            if (A <= Orden / 2)
+            {
+                InsertarEnHoja(H, HDerecho, Nodo, A);
+            }
+            else
+            {
+                var ValorNuevo = A - PosicionDeLaMitad;
+                InsertarEnHoja(H, HDerecho, MitadDerecha, ValorNuevo);
+            }
+            Mitad = Nodo.Valores[Nodo.Contador];
+            MitadDerecha.Hijos[0] = Nodo.Hijos[Nodo.Contador];
+            Nodo.Contador = Nodo.Contador - 1;
+        }
+        private void Movilizar(T N, nodoB<T> M, ref bool SubirNodo, ref T O, ref nodoB<T> NuevaRaiz)
+        {
+            var Aux = default(int);
+            var SiAplica = default(bool);
+
+            if (EstaVacio(M))
+            {
+                SubirNodo = true;
+                O = N;
+                NuevaRaiz = null;
+            }
+            else
+            {
+                BusquedaNodo(N, M, ref SiAplica, ref Aux);
+
+                if (SiAplica)
                 {
-                    i--;
+                    return;
                 }
-                if (Node.children[i + 1].NumberOfValues == degree-1) //2tpord
+                Movilizar(N, M.Hijos[Aux], ref SubirNodo, ref O, ref NuevaRaiz);
+
+                if (SubirNodo)
                 {
-                    //split
-                    Split(i + 1, Node.children[i + 1]);
-                    if (((int)Comparer.DynamicInvoke(Node.values[i + 1], value) == -1))
+                    if (M.Contador < Maximo)
                     {
-                        i++;
+                        SubirNodo = false;
+                        InsertarEnHoja(O, NuevaRaiz, M, Aux);
+                    }
+                    else
+                    {
+                        SubirNodo = true;
+                        PartirNodo(O, NuevaRaiz, M, Aux, ref O, ref NuevaRaiz);
                     }
                 }
-                InsertInNode(value, Node.children[i + 1]);
             }
         }
-
-        void Split(int i, BTreeNode<T> Node)
+        private void Insertar(T AB, ref nodoB<T> Raiz)
         {
-            BTreeNode<T> Temp = new BTreeNode<T>(degree);
-            Temp.isLeaf = Node.isLeaf;
-            Temp.NumberOfValues = degree/2 - 1;
-            for (int j = 0; j < degree/2 - 1; j++) //degpor/2
+            var EmpujarHaciaArriba = default(bool);
+            var Aux2 = default(nodoB<T>);
+            var Aux = default(T);
+            Movilizar(AB, Raiz, ref EmpujarHaciaArriba, ref Aux, ref Aux2);
+            if (EmpujarHaciaArriba)
             {
-                Temp.values[j] = Node.values[j + degree/2];//cambié por deg medios
+                var Z = new nodoB<T>();
+                Z.Contador = 1;
+                Z.Valores[1] = Aux;
+                Z.Hijos[0] = Raiz;
+                Z.Hijos[1] = Aux2;
+                Raiz = Z;
             }
-            if (!Node.isLeaf)
+        }
+        public void Insertar(T AB)
+        {
+            var NuevaRaiz = this.raiz;
+            Insertar(AB, ref NuevaRaiz);
+            this.raiz = NuevaRaiz;
+        }
+        private void Inorder(nodoB<T> Q)
+        {
+            if (!EstaVacio(Q))
             {
-                for (int j = 0; j < degree/2; j++)//degpor/2
+                Inorder(Q.Hijos[0]);
+                for (int i = 1; i <= Q.Contador; i++)
                 {
-                    Temp.children[j] = Node.children[j + degree/2];//degpor/2
+                    Listado.Value.Add(Q.Valores[i]);
+                    Inorder(Q.Hijos[i]);
                 }
             }
-            Node.NumberOfValues = degree/2 - 1;
-            //acá voy a probar
-            for (int j = Node.NumberOfValues; j >= i + 1; j--)
-            {
-                Node.children[j + 1] = Node.children[j];
-            }
-            Node.children[i + 1] = Temp;
-            for (int j = Node.NumberOfValues-1; j >= i; j--)
-            {
-                Node.values[j + 1] = Node.values[j];
-            }
-            Temp.values[i] = Node.values[degree/2 - 1];//degpor/2
-            Temp.NumberOfValues++;
-        }
-
-        public bool Exists(T value)
-        {
-            return Exists(value, Root);
-        }
-
-        bool Exists(T value, BTreeNode<T> Node)
-        {
-            int i = 0;
-            while (i < (count - 1) && ((int)Comparer.DynamicInvoke(value, Node.values[i]) != -1))
-            {
-                i++;
-            }
-            if ((int)Comparer.DynamicInvoke(value, Node.values[i]) == 0)
-            {
-                return true;
-            }
-            if (Root.isLeaf)
-            {
-                return false;
-            }
-            return Exists(value, Node.children[i]);
         }
     }
 }
