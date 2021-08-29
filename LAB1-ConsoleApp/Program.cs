@@ -1,10 +1,16 @@
 ﻿using System;
+using LAB1_DataStructures.Tree;
 
 namespace LAB1_ConsoleApp
 {
     class Program
     {
-
+        public static Comparison<int> IntComparison = delegate (int x1, int x2)
+        {
+            if (x1 > x2) return 1;
+            if (x2 > x1) return -1;
+            return 0;
+        };
         public static void Header()
         {
             Console.Clear();
@@ -80,6 +86,8 @@ namespace LAB1_ConsoleApp
                         case 1:
                             {
                                 //DECLARAR ARBOL B
+                                LAB1_DataStructures.Tree.BTree<int> Tree = new LAB1_DataStructures.Tree.BTree<int>();
+                                Tree.Comparer = IntComparison;
                                 bool a = true;
                                 while (a)
                                 {
@@ -94,6 +102,7 @@ namespace LAB1_ConsoleApp
                                             throw new FormatException();
                                         }
                                         //SET GRADO DEL ARBOL
+                                        Tree.degree = m;
                                         Header();
                                         TitleOption1();
                                         Console.WriteLine("Ingrese la cantidad de números al azar a ingresar (debe ser mayor a 0):");
@@ -117,9 +126,10 @@ namespace LAB1_ConsoleApp
                                         Header();
                                         TitleOption1();
                                         Random ElRandom1 = new Random();
-                                        //for (int j = 0; j < i; j++)
+                                        for (int j = 0; j < i; j++)
                                         {
                                             //INSERTAR ACA AL ARBOL B EL NÚMERO GENERADO AL AZAR.
+                                            Tree.Insert(ElRandom1.Next(min, max));
                                         }
                                         Console.WriteLine("Se ha llenado satisfactoriamente el árbol. Presione cualquier tecla para ver los recorridos.");
                                         Console.ReadKey();
