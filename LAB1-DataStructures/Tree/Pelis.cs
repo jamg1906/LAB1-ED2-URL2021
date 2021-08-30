@@ -11,10 +11,7 @@
             rottenTomatoesRating = _rottenTomatoesRating;
             releaseDate = _casa_productora;
         }
-        public Pelis()
-        {
 
-        }
         public string title { get; set; }
         public string director { get; set; }
         public string genre { get; set; }

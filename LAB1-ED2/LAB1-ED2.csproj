@@ -5,5 +5,9 @@
     <RootNamespace>LAB1_ED2</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\LAB1-DataStructures\LAB1-DataStructures.csproj" />
+  </ItemGroup>
+
 
 </Project>
