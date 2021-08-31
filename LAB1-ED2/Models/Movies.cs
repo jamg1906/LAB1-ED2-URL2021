@@ -15,10 +15,12 @@ namespace LAB1_ED2.Models
         public int rottenTomatoesRating { get; set; }
         public string title { get; set; }
 
-        public static Comparison<int> MovieComparison = delegate (int a, int b)
+
+        public static Comparison<Movies> Comparison = delegate (Movies movie1, Movies movie2)
         {
-            return 1;
+            return movie1.CompareTo(movie2);
         };
+
         public int CompareTo(object obj)
         {
             try
@@ -43,8 +45,6 @@ namespace LAB1_ED2.Models
                 return 0;
             }
         }
-
-        Lab01.Models.CompararCon<Movies> CC;
 
     }
 }

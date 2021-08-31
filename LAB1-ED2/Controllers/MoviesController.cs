@@ -70,8 +70,8 @@ namespace LAB1_ED2.Controllers
                     return StatusCode(500);
                 }
                 //Esta línea debería inicializar el árbol, falta cambiar delegado.
-                //Storage.Instance.CC = new Lab01.Models.CompararCon<int>();
-                //Storage.Instance.arbolito = new Lab01.Models.arbolB<Movies>(degree, );
+                Lab01.Models.CompararCon<Movies> CC = new Lab01.Models.CompararCon<Movies>(Movies.Comparison);
+                Storage.Instance.arbolito = new Lab01.Models.arbolB<Movies>(degree, CC);
                 return Ok();
             }
             catch (Exception)
