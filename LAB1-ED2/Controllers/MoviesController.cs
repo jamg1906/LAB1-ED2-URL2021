@@ -89,10 +89,14 @@ namespace LAB1_ED2.Controllers
                 using (var reserved_memory = new MemoryStream())
                 {
                     file.CopyToAsync(reserved_memory);
+
                     string json_text = Encoding.ASCII.GetString(reserved_memory.ToArray());
 
-                    JsonSerializerOptions name_rule = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase, IgnoreNullValues = true };
-                    moviesList = JsonSerializer.Deserialize<List<Movies>>(json_text, name_rule);
+                    JsonSerializerOptions rule = new JsonSerializerOptions { IgnoreNullValues = true };
+
+                    List<Movies> All = JsonSerializer.Deserialize<List<Movies>>(json_text, rule);
+
+                    moviesList = All;
                 }
 
                 if (moviesList != null)
@@ -100,7 +104,7 @@ namespace LAB1_ED2.Controllers
                     for (int i = 0; i < moviesList.Count; i++)
                     {
                         Movies Temp = moviesList[i];
-                        Temp.id = Temp.title + "-" + Convert.ToDateTime(Temp.releaseDate).Year;
+                        //Temp.id = Temp.title + "-" + Convert.ToDateTime(Temp.releaseDate).Year;
                         Storage.Instance.arbolito.Insertar(Temp);
                     }
                     return Ok();

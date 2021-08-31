@@ -5,9 +5,13 @@ using System.Threading.Tasks;
 
 namespace LAB1_ED2.Models
 {
+    public class MovieFriend
+    {
+        public List<Movies> data { get; set;}
+    }
     public class Movies
     {
-        public string id { get; set; }
+        //public string id { get; set; }
         public string director { get; set; }
         public double imdbRating { get; set; }
         public string genre { get; set; }
