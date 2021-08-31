@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>LAB1_ED2</RootNamespace>
+    <Nullable>enable</Nullable>
+    <UserSecretsId>5fa19431-ab38-41f5-a5ea-fa670305554d</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
