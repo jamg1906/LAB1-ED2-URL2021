@@ -27,6 +27,10 @@ namespace LAB1_ED2.Models
 
         public int CompareTo(object obj)
         {
+            if (obj == null)
+            {
+                return 1;
+            }
             try
             {
                 var Movie = (Movies)obj;

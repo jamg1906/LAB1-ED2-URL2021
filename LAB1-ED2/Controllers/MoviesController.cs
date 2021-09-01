@@ -104,7 +104,6 @@ namespace LAB1_ED2.Controllers
                     for (int i = 0; i < moviesList.Count; i++)
                     {
                         Movies Temp = moviesList[i];
-                        //Temp.id = Temp.title + "-" + Convert.ToDateTime(Temp.releaseDate).Year;
                         Storage.Instance.arbolito.Insertar(Temp);
                     }
                     return Ok();
